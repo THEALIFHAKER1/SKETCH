@@ -1,0 +1,71 @@
+<script src="./Components/head.js"></script>
+<script src="./functions/localStorage.js"></script>
+<script src="./functions/users.js" ></script>
+<script>document.write(loadHead());</script>
+
+<script type="text/babel">
+    function logout() {
+        LogoutUser();
+        alert('you have been logout');
+        window.location.href = "login.html";
+    }
+
+    function ListPage(){
+        const user = GetLoggedUser();
+        if(!user){
+            window.location.href = "login.html";
+        }
+        const username = user.username.toUpperCase();
+        return(
+            <div className="container-lg">
+                <nav className="navbar navbar-expand-lg">
+                    <div className="container-fluid">
+                        <a className="navbar-brand" href="index.html">
+                            Sketch
+                        </a>
+                        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span className="navbar-toggler-icon"></span>
+                        </button>
+                        <div className="collapse navbar-collapse" id="navbarNav">
+                            <ul className="navbar-nav">
+                                <li className="nav-item">
+                                    <a className="nav-link" href="list.html">
+                                        List
+                                    </a>
+                                </li>
+                                <li className="nav-item">
+                                    <a className="nav-link" href="sketch.html">
+                                        Sketch
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul className="navbar-nav ms-auto">
+                                <li className="nav-item">
+                                    <a className="nav-link" href="#" id="user-name">
+                                        {username}
+                                    </a>
+                                </li>
+                                <li className="nav-item">
+                                    <button type='button' className="btn btn-danger" onClick={logout}>
+                                        Logout
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+                <div>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">Home</li>
+                        <li class="breadcrumb-item active" aria-current="page">List</li>
+                    </ol>
+                    <h1>ListPage</h1>
+                </div>
+                
+            </div>
+        )
+    }
+    const container = document.getElementById('root');
+    const root = ReactDOM.createRoot(container);
+    root.render(<ListPage />)
+</script>

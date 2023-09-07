@@ -1,0 +1,70 @@
+<script src="./Components/head.js"></script>
+<script src="./functions/localStorage.js"></script>
+<script src="./functions/users.js" ></script>
+<script>document.write(loadHead());</script>
+
+<script type="text/babel">
+
+    function registerAction(event) {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const users = GetData('users') || [];
+        
+        users.some(user => user.username === username)
+            ? alert('Username already exists')
+            : password === confirmPassword
+                ? (SaveUser(username, password), alert('User saved'), (window.location.href = 'login.html'))
+                : alert('Passwords do not match');
+        
+    }
+
+    function RegisterPage(){
+        return(
+            <div className="container-lg"> 
+                <nav className="navbar navbar-expand-lg">
+                    <div className="container-fluid">
+                        <a className="navbar-brand" href="#">
+                            Sketch
+                        </a>
+                        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span className="navbar-toggler-icon"></span>
+                        </button>
+                        <div className="collapse navbar-collapse" id="navbarNav">
+                            <ul className="navbar-nav ms-auto">
+                                <li className="nav-item">
+                                    <a className="nav-link" href="login.html">
+                                        Login
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+                <h1>Register</h1>
+                <form onSubmit={registerAction}>
+                    <div className="mb-3">
+                        <label htmlFor="username" className="form-label">Username</label>
+                        <input required type="username" className="form-control" id="username" />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="password" className="form-label">Password</label>
+                        <input required type="password" className="form-control" id="password" />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="confirmPassword" className="form-label">confirm password</label>
+                        <input required type="password" className="form-control" id="confirmPassword" />
+                    </div>
+                    <div className="mb-3">
+                        <button type="submit" className="btn btn-primary" style={{ marginRight: "10px" }}>Register</button>
+                        <button type="reset" className="btn btn-danger">Clear</button>
+                    </div>
+                </form>
+            </div>
+        )
+    }
+    const container = document.getElementById('root');
+    const root = ReactDOM.createRoot(container);
+    root.render(<RegisterPage />)
+</script>
