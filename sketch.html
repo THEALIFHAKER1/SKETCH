@@ -41,28 +41,19 @@
       };
 
       document.addEventListener("mousemove", handleDocumentMouseMove);
-      document.addEventListener("touchmove", handleDocumentMouseMove);
-      document.addEventListener("mouseup", handleTouchEnd);
-      document.addEventListener("touchend", handleTouchEnd);
 
       return () => {
         document.removeEventListener("mousemove", handleDocumentMouseMove);
-        document.removeEventListener("touchmove", handleDocumentMouseMove);
-        document.removeEventListener("mouseup", handleTouchEnd);
-        document.removeEventListener("touchend", handleTouchEnd);
       };
     }, [ctx, isPainting]);
 
-    function isInsideCanvas(event) {
+    function isInsideCanvas() {
       const canvas = canvaRef.current;
-      const clientX = event.clientX || event.touches[0].clientX;
-      const clientY = event.clientY || event.touches[0].clientY;
-
       return (
-        clientX > canvas.offsetLeft &&
-        clientX < canvas.offsetLeft + canvas.width &&
-        clientY > canvas.offsetTop &&
-        clientY < canvas.offsetTop + canvas.height
+        event.clientX > canvas.offsetLeft &&
+        event.clientX < canvas.offsetLeft + canvas.width &&
+        event.clientY > canvas.offsetTop &&
+        event.clientY < canvas.offsetTop + canvas.height
       );
     }
 
@@ -71,21 +62,18 @@
         return;
       }
 
-      ctx.lineWidth = lineWidthRef.current || lineWidthRef.current.value;
+      ctx.lineWidth = lineWidthRef.current?.value || lineWidthRef.current;
       ctx.lineCap = "round";
-      ctx.strokeStyle = colorRef.current || colorRef.current.value;
+      ctx.strokeStyle = colorRef.current?.value || colorRef.current;
 
-      const clientX = event.clientX || event.touches[0].clientX;
-      const clientY = event.clientY || event.touches[0].clientY;
-      const xOffset = clientX - canvaRef.current.offsetLeft;
-      const yOffset = clientY - canvaRef.current.offsetTop;
+      const xOffset = event.clientX - canvaRef.current.offsetLeft;
+      const yOffset = event.clientY - canvaRef.current.offsetTop;
 
       ctx.lineTo(xOffset, yOffset);
       ctx.stroke();
     }
 
     function handleMouseDown(event) {
-      event.preventDefault();
       setIsPainting(true);
       draw(event);
     }
@@ -141,9 +129,13 @@
     function saveDrawing(event) {
       event.preventDefault();
       const dataURL = canvaRef.current.toDataURL();
+      console.log("dataURL", dataURL);
       const title = titleRef.current.value;
+      console.log("title", title);
       const Public = guest ? true : isPublic.current;
+      console.log("isPublic", Public);
       const username = user.username;
+      console.log("username", username);
 
       SaveCanvas(title, dataURL, username, Public);
     }
@@ -157,7 +149,7 @@
 
     function logout() {
       LogoutUser();
-      alert("You have been logged out");
+      alert("you have been logout");
       window.location.href = "login.html";
     }
 
