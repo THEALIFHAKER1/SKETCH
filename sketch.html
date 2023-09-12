@@ -153,6 +153,34 @@
     } else {
       guest = false;
     }
+
+    const handleTouchStart = (event) => {
+      const { clientX, clientY } = event.touches[0];
+      const canvas = canvaRef.current;
+      const rect = canvas.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      setDrawing(true);
+      setLastX(x);
+      setLastY(y);
+    };
+
+    const handleTouchMove = (event) => {
+      if (!drawing) return;
+      const { clientX, clientY } = event.touches[0];
+      const canvas = canvaRef.current;
+      const rect = canvas.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      draw(lastX, lastY, x, y);
+      setLastX(x);
+      setLastY(y);
+    };
+
+    const handleTouchEnd = () => {
+      setDrawing(false);
+    };
+
     return (
       <div className="container-lg">
         <nav className="navbar navbar-expand-lg">
@@ -314,6 +342,9 @@
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}
                 onMouseMove={handleMouseMove}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
               >
                 sketch here
               </canvas>
