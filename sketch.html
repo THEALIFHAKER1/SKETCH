@@ -33,20 +33,36 @@
         }
       };
 
+      const handleTouchEnd = () => {
+        if (isPainting && ctx) {
+          ctx.stroke();
+          ctx.beginPath();
+        }
+      };
+
       document.addEventListener("mousemove", handleDocumentMouseMove);
+      document.addEventListener("touchmove", handleDocumentMouseMove);
+      document.addEventListener("mouseup", handleTouchEnd);
+      document.addEventListener("touchend", handleTouchEnd);
 
       return () => {
         document.removeEventListener("mousemove", handleDocumentMouseMove);
+        document.removeEventListener("touchmove", handleDocumentMouseMove);
+        document.removeEventListener("mouseup", handleTouchEnd);
+        document.removeEventListener("touchend", handleTouchEnd);
       };
     }, [ctx, isPainting]);
 
-    function isInsideCanvas() {
+    function isInsideCanvas(event) {
       const canvas = canvaRef.current;
+      const clientX = event.clientX || event.touches[0].clientX;
+      const clientY = event.clientY || event.touches[0].clientY;
+
       return (
-        event.clientX > canvas.offsetLeft &&
-        event.clientX < canvas.offsetLeft + canvas.width &&
-        event.clientY > canvas.offsetTop &&
-        event.clientY < canvas.offsetTop + canvas.height
+        clientX > canvas.offsetLeft &&
+        clientX < canvas.offsetLeft + canvas.width &&
+        clientY > canvas.offsetTop &&
+        clientY < canvas.offsetTop + canvas.height
       );
     }
 
@@ -55,18 +71,21 @@
         return;
       }
 
-      ctx.lineWidth = lineWidthRef.current?.value || lineWidthRef.current;
+      ctx.lineWidth = lineWidthRef.current || lineWidthRef.current.value;
       ctx.lineCap = "round";
-      ctx.strokeStyle = colorRef.current?.value || colorRef.current;
+      ctx.strokeStyle = colorRef.current || colorRef.current.value;
 
-      const xOffset = event.clientX - canvaRef.current.offsetLeft;
-      const yOffset = event.clientY - canvaRef.current.offsetTop;
+      const clientX = event.clientX || event.touches[0].clientX;
+      const clientY = event.clientY || event.touches[0].clientY;
+      const xOffset = clientX - canvaRef.current.offsetLeft;
+      const yOffset = clientY - canvaRef.current.offsetTop;
 
       ctx.lineTo(xOffset, yOffset);
       ctx.stroke();
     }
 
     function handleMouseDown(event) {
+      event.preventDefault();
       setIsPainting(true);
       draw(event);
     }
@@ -122,13 +141,9 @@
     function saveDrawing(event) {
       event.preventDefault();
       const dataURL = canvaRef.current.toDataURL();
-      console.log("dataURL", dataURL);
       const title = titleRef.current.value;
-      console.log("title", title);
       const Public = guest ? true : isPublic.current;
-      console.log("isPublic", Public);
       const username = user.username;
-      console.log("username", username);
 
       SaveCanvas(title, dataURL, username, Public);
     }
@@ -142,7 +157,7 @@
 
     function logout() {
       LogoutUser();
-      alert("you have been logout");
+      alert("You have been logged out");
       window.location.href = "login.html";
     }
 
@@ -153,34 +168,6 @@
     } else {
       guest = false;
     }
-
-    const handleTouchStart = (event) => {
-      const { clientX, clientY } = event.touches[0];
-      const canvas = canvaRef.current;
-      const rect = canvas.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-      setDrawing(true);
-      setLastX(x);
-      setLastY(y);
-    };
-
-    const handleTouchMove = (event) => {
-      if (!drawing) return;
-      const { clientX, clientY } = event.touches[0];
-      const canvas = canvaRef.current;
-      const rect = canvas.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-      draw(lastX, lastY, x, y);
-      setLastX(x);
-      setLastY(y);
-    };
-
-    const handleTouchEnd = () => {
-      setDrawing(false);
-    };
-
     return (
       <div className="container-lg">
         <nav className="navbar navbar-expand-lg">
@@ -342,9 +329,6 @@
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}
                 onMouseMove={handleMouseMove}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
               >
                 sketch here
               </canvas>
