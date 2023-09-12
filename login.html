@@ -17,7 +17,10 @@
       ? (window.location.href = "index.html")
       : alert("Invalid username or password");
   }
-
+  function guest() {
+    Guest();
+    window.location.href = "index.html";
+  }
   function LoginPage() {
     return (
       <div className="container-lg">
@@ -45,7 +48,7 @@
                   </a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="index.html">
+                  <a className="nav-link" onClick={guest}>
                     Guest
                   </a>
                 </li>

@@ -9,6 +9,7 @@
 <script type="text/babel">
   const { useState, useRef, useEffect } = React;
   let username;
+  let guest;
 
   function SketchPage() {
     const formRef = useRef(null);
@@ -124,8 +125,9 @@
       console.log("dataURL", dataURL);
       const title = titleRef.current.value;
       console.log("title", title);
-      const Public = user ? isPublic.current : true;
+      const Public = guest ? true : isPublic.current;
       console.log("isPublic", Public);
+      const username = user.username;
       console.log("username", username);
 
       SaveCanvas(title, dataURL, username, Public);
@@ -145,7 +147,12 @@
     }
 
     const user = GetLoggedUser();
-    user ? (username = user.username.toUpperCase()) : (username = "Guest");
+    username = user.username.toUpperCase();
+    if (username === "GUEST") {
+      guest = true;
+    } else {
+      guest = false;
+    }
     return (
       <div className="container-lg">
         <nav className="navbar navbar-expand-lg">
@@ -166,13 +173,13 @@
             </button>
             <div className="collapse navbar-collapse" id="navbarNav">
               <ul className="navbar-nav">
-                {user ? (
+                {guest ? null : (
                   <li className="nav-item">
                     <a className="nav-link" href="list.html">
                       List
                     </a>
                   </li>
-                ) : null}
+                )}
                 <li className="nav-item">
                   <a className="nav-link" href="sketch.html">
                     Sketch
@@ -185,17 +192,15 @@
                     {username}
                   </a>
                 </li>
-                {user ? (
-                  <li className="nav-item">
-                    <button
-                      type="button"
-                      className="btn btn-danger"
-                      onClick={logout}
-                    >
-                      Logout
-                    </button>
-                  </li>
-                ) : null}
+                <li className="nav-item">
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={logout}
+                  >
+                    Logout
+                  </button>
+                </li>
               </ul>
             </div>
           </div>
@@ -241,7 +246,7 @@
                 onChange={handleFileChange}
               />
             </div>
-            {user ? (
+            {guest ? null : (
               <div className="form-check">
                 <input
                   className="form-check-input"
@@ -253,7 +258,7 @@
                   Public
                 </label>
               </div>
-            ) : null}
+            )}
             <div
               className="mb-3"
               style={{

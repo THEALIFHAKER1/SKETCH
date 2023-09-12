@@ -16,6 +16,8 @@
   function ListPage() {
     const user = GetLoggedUser();
     const canvas = GetUserCanvas(user.username);
+    console.log(canvas);
+    console.log(user.username);
     if (!user) {
       window.location.href = "login.html";
     }
@@ -40,13 +42,11 @@
             </button>
             <div className="collapse navbar-collapse" id="navbarNav">
               <ul className="navbar-nav">
-                {user ? (
-                  <li className="nav-item">
-                    <a className="nav-link" href="list.html">
-                      List
-                    </a>
-                  </li>
-                ) : null}
+                <li className="nav-item">
+                  <a className="nav-link" href="list.html">
+                    List
+                  </a>
+                </li>
                 <li className="nav-item">
                   <a className="nav-link" href="sketch.html">
                     Sketch
@@ -80,6 +80,9 @@
             </li>
           </ol>
           <h1>ListPage</h1>
+          <p style={{ marginTop: 10 }}>
+            <span id="image-count">{canvas.length}</span> Sketches
+          </p>
           <div
             style={{
               display: "flex",
