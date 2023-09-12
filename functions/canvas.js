@@ -1,33 +1,32 @@
-function SaveCanvas(canvas, public, username) {
-    let canvasesPublic = GetData('canvases') || []; 
-    let canvases = GetData('canvases') || [];
+function SaveCanvas(title, dataURL, username, Public) {
+  let canvas = GetData("canvas") || [];
 
-    if(public){
-        canvasesPublic.push({
-            canvas: canvas,
-            });
-        SaveData('canvases', canvasesPublic);
-    }else{
-        canvases.push({
-            canvas: canvas,
-            username: username
-        });        
-        SaveData('canvases', canvases);
-    }
+  if (canvas) {
+    canvas.push({
+      title: title,
+      canvas: dataURL,
+      username: username,
+      Public: Public,
+    });
+    SaveData("canvas", canvas);
+    alert("Canvas saved");
+  } else {
+    alert("Canvas not saved");
+  }
 }
 
-function GetPublicCanvases() {
-    let canvases = GetData('canvases') || []; 
+// get public canvas
 
-    const publicCanvases = canvases.filter(canvas => canvas.username == null);
-    
-    return publicCanvases;
+function GetPublicCanvas() {
+  let canvas = GetData("canvas") || [];
+  let publicCanvas = canvas.filter((item) => item.Public === true);
+  return publicCanvas;
 }
 
-function GetPrivateCanvases(username) {
-    let canvases = GetData('canvases') || []; 
+// get user canvas
 
-    const privateCanvases = canvases.filter(canvas => canvas.username == username);
-    
-    return privateCanvases;
+function GetUserCanvas(username) {
+  let canvas = GetData("canvas") || [];
+  let userCanvas = canvas.filter((item) => item.username === username);
+  return userCanvas;
 }

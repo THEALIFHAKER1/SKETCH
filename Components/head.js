@@ -1,5 +1,5 @@
 function loadHead() {
-  return (`
+  return `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -16,5 +16,5 @@ function loadHead() {
   <body>
   <div id="root">
   </div>
-  `)
+  `;
 }

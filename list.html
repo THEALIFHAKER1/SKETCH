@@ -1,6 +1,7 @@
 <script src="./Components/head.js"></script>
 <script src="./Functions/localStorage.js"></script>
 <script src="./Functions/users.js"></script>
+<script src="./Functions/canvas.js"></script>
 <script>
   document.write(loadHead());
 </script>
@@ -14,6 +15,7 @@
 
   function ListPage() {
     const user = GetLoggedUser();
+    const canvas = GetUserCanvas(user.username);
     if (!user) {
       window.location.href = "login.html";
     }
@@ -38,11 +40,13 @@
             </button>
             <div className="collapse navbar-collapse" id="navbarNav">
               <ul className="navbar-nav">
-                <li className="nav-item">
-                  <a className="nav-link" href="list.html">
-                    List
-                  </a>
-                </li>
+                {user ? (
+                  <li className="nav-item">
+                    <a className="nav-link" href="list.html">
+                      List
+                    </a>
+                  </li>
+                ) : null}
                 <li className="nav-item">
                   <a className="nav-link" href="sketch.html">
                     Sketch
@@ -69,13 +73,40 @@
           </div>
         </nav>
         <div>
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item">Home</li>
-            <li class="breadcrumb-item active" aria-current="page">
+          <ol className="breadcrumb">
+            <li className="breadcrumb-item">Home</li>
+            <li className="breadcrumb-item active" aria-current="page">
               List
             </li>
           </ol>
           <h1>ListPage</h1>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "flex-start",
+            }}
+          >
+            {canvas.map((canvas, key) => (
+              <div
+                key={key}
+                className="card"
+                style={{
+                  width: 200,
+                  margin: 10,
+                }}
+              >
+                <img src={canvas.canvas} className="card-img-top" alt="..." />
+                <div className="card-body">
+                  <h5 className="card-title">{canvas.title}</h5>
+                  <p className="card-text">{canvas.username.toUpperCase()}</p>
+                  <a href="#" className="btn btn-primary">
+                    Go somewhere
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
