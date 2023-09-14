@@ -136,10 +136,10 @@
       console.log("isPublic", Public);
       const username = user.username;
       console.log("username", username);
-      const urlParams = new URLSearchParams(window.location.search);
-      const dateString = urlParams.get("date");
-      console.log("dateString", dateString);
-      SaveEditedCanvas(title, dataURL, username, Public, date);
+      const date = new Date();
+      console.log("Date", Date);
+
+      SaveCanvas(title, dataURL, username, Public, date);
     }
 
     function reset() {
