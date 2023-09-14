@@ -136,14 +136,18 @@
       console.log("isPublic", Public);
       const username = user.username;
       console.log("username", username);
-
-      SaveCanvas(title, dataURL, username, Public);
+      const urlParams = new URLSearchParams(window.location.search);
+      const dateString = urlParams.get("date");
+      console.log("dateString", dateString);
+      SaveEditedCanvas(title, dataURL, username, Public, date);
     }
 
     function reset() {
       const canvas = canvaRef.current;
       const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      lineWidthRef.current = 5;
+      colorRef.current = "#000000";
       formRef.current.reset();
     }
 

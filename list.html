@@ -12,7 +12,11 @@
     alert("you have been logout");
     window.location.href = "login.html";
   }
-
+  function deleteCanvas(date) {
+    alert("sucess delete canvas");
+    DeleteCanvas(date);
+    window.location.href = "list.html";
+  }
   function ListPage() {
     const user = GetLoggedUser();
     const canvas = GetUserCanvas(user.username);
@@ -101,11 +105,20 @@
               >
                 <img src={canvas.canvas} className="card-img-top" alt="..." />
                 <div className="card-body">
-                  <h5 className="card-title">{canvas.title}</h5>
+                  <h5 className="card-title">- {canvas.title}</h5>
                   <p className="card-text">{canvas.username.toUpperCase()}</p>
-                  <a href="#" className="btn btn-primary">
-                    Go somewhere
-                  </a>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => alert("sketch.html?date=" + canvas.Date)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => deleteCanvas(canvas.Date)}
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             ))}
