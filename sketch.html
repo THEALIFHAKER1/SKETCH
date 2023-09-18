@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <script src="./Components/head.js"></script>
 <script src="./Functions/localStorage.js"></script>
 <script src="./Functions/users.js"></script>
@@ -338,3 +339,345 @@
   const root = ReactDOM.createRoot(container);
   root.render(<SketchPage />);
 </script>
+=======
+<script src="./Components/head.js"></script>
+<script src="./Functions/localStorage.js"></script>
+<script src="./Functions/users.js"></script>
+<script src="./Functions/canvas.js"></script>
+<script>
+  document.write(loadHead());
+</script>
+
+<script type="text/babel">
+  const { useState, useRef, useEffect } = React;
+  let username;
+  let guest;
+
+  function SketchPage() {
+    const formRef = useRef(null);
+    const canvaRef = useRef(null);
+    const titleRef = useRef(null);
+    const isPublic = useRef(false);
+    const lineWidthRef = useRef(5);
+    const colorRef = useRef("#000000");
+
+    const ctx = canvaRef.current ? canvaRef.current.getContext("2d") : null;
+    const [isPainting, setIsPainting] = useState(false);
+
+    useEffect(() => {
+      const handleDocumentMouseMove = (event) => {
+        if (isPainting && !isInsideCanvas(event)) {
+          setIsPainting(false);
+          if (ctx) {
+            ctx.stroke();
+            ctx.beginPath();
+          }
+        }
+      };
+
+      const handleTouchEnd = () => {
+        if (isPainting && ctx) {
+          ctx.stroke();
+          ctx.beginPath();
+        }
+      };
+
+      document.addEventListener("mousemove", handleDocumentMouseMove);
+
+      return () => {
+        document.removeEventListener("mousemove", handleDocumentMouseMove);
+      };
+    }, [ctx, isPainting]);
+
+    function isInsideCanvas() {
+      const canvas = canvaRef.current;
+      return (
+        event.clientX > canvas.offsetLeft &&
+        event.clientX < canvas.offsetLeft + canvas.width &&
+        event.clientY > canvas.offsetTop &&
+        event.clientY < canvas.offsetTop + canvas.height
+      );
+    }
+
+    function draw(event) {
+      if (!isPainting || !ctx) {
+        return;
+      }
+
+      ctx.lineWidth = lineWidthRef.current?.value || lineWidthRef.current;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = colorRef.current?.value || colorRef.current;
+
+      const xOffset = event.clientX - canvaRef.current.offsetLeft;
+      const yOffset = event.clientY - canvaRef.current.offsetTop;
+
+      ctx.lineTo(xOffset, yOffset);
+      ctx.stroke();
+    }
+
+    function handleMouseDown(event) {
+      setIsPainting(true);
+      draw(event);
+    }
+
+    function handleMouseUp() {
+      setIsPainting(false);
+      if (ctx) {
+        ctx.stroke();
+        ctx.beginPath();
+      }
+    }
+
+    function handleMouseMove(event) {
+      if (isPainting) {
+        draw(event);
+      }
+    }
+
+    function handleTitleChange(event) {
+      const sketchName = event.target.value;
+      const title = "Sketch - " + sketchName;
+      document.title = title;
+    }
+
+    function handleFileChange(event) {
+      const file = event.target.files[0];
+      const canvas = canvaRef.current;
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = () => {
+            const ctx = canvas.getContext("2d");
+            if (ctx) {
+              const imgWidth = img.width;
+              const imgHeight = img.height;
+
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+            }
+          };
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function handlePublicChange(event) {
+      isPublic.current = event.target.checked;
+    }
+
+    function saveDrawing(event) {
+      event.preventDefault();
+      const dataURL = canvaRef.current.toDataURL();
+      console.log("dataURL", dataURL);
+      const title = titleRef.current.value;
+      console.log("title", title);
+      const Public = guest ? true : isPublic.current;
+      console.log("isPublic", Public);
+      const username = user.username;
+      console.log("username", username);
+      const date = new Date();
+      console.log("Date", Date);
+
+      SaveCanvas(title, dataURL, username, Public, date);
+    }
+
+    function reset() {
+      const canvas = canvaRef.current;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      lineWidthRef.current = 5;
+      colorRef.current = "#000000";
+      formRef.current.reset();
+    }
+
+    function logout() {
+      LogoutUser();
+      alert("you have been logout");
+      window.location.href = "login.html";
+    }
+
+    const user = GetLoggedUser();
+    username = user.username.toUpperCase();
+    if (username === "GUEST") {
+      guest = true;
+    } else {
+      guest = false;
+    }
+    return (
+      <div className="container-lg">
+        <nav className="navbar navbar-expand-lg">
+          <div className="container-fluid">
+            <a className="navbar-brand" href="index.html">
+              Sketch
+            </a>
+            <button
+              className="navbar-toggler"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarNav"
+              aria-controls="navbarNav"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span className="navbar-toggler-icon"></span>
+            </button>
+            <div className="collapse navbar-collapse" id="navbarNav">
+              <ul className="navbar-nav">
+                {guest ? null : (
+                  <li className="nav-item">
+                    <a className="nav-link" href="list.html">
+                      List
+                    </a>
+                  </li>
+                )}
+                <li className="nav-item">
+                  <a className="nav-link" href="sketch.html">
+                    Sketch
+                  </a>
+                </li>
+              </ul>
+              <ul className="navbar-nav ms-auto">
+                <li className="nav-item">
+                  <a className="nav-link" href="#" id="user-name">
+                    {username}
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={logout}
+                  >
+                    Logout
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+        <div>
+          <ol className="breadcrumb">
+            <li className="breadcrumb-item">Home</li>
+            <li className="breadcrumb-item active" aria-current="page">
+              Sketch
+            </li>
+          </ol>
+          <form ref={formRef} onSubmit={saveDrawing}>
+            <div className="mb-3 input-group">
+              <input
+                ref={titleRef}
+                onChange={handleTitleChange}
+                className="form-control"
+                id="title"
+                type="text"
+                placeholder="Title..."
+              />
+              <button type="submit" className="btn btn-primary">
+                Save
+              </button>
+              <button
+                type="reset"
+                className="btn btn-danger"
+                value="reset"
+                onClick={reset}
+              >
+                Clear
+              </button>
+            </div>
+            <div
+              style={{
+                marginBottom: "20px",
+              }}
+            >
+              <input
+                className="form-control form-control-sm"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+            </div>
+            {guest ? null : (
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="public"
+                  onChange={handlePublicChange}
+                />
+                <label className="form-check-label" htmlFor="public">
+                  Public
+                </label>
+              </div>
+            )}
+            <div
+              className="mb-3"
+              style={{
+                display: "flex",
+                justifyContent: "flex-start",
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{
+                  marginRight: "50px",
+                }}
+              >
+                <input
+                  ref={colorRef}
+                  type="color"
+                  defaultValue={"#000000"}
+                  className="form-control form-control-color"
+                  id="color"
+                  onChange={function (event) {
+                    colorRef.current = event.target.value;
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  width: "100%",
+                }}
+              >
+                <input
+                  ref={lineWidthRef}
+                  type="range"
+                  className="form-range"
+                  min="0"
+                  max="30"
+                  id="size"
+                  defaultValue={5}
+                  onChange={function (event) {
+                    lineWidthRef.current = event.target.value;
+                  }}
+                />
+              </div>
+            </div>
+            <div>
+              <canvas
+                style={{
+                  border: "1px solid black",
+                }}
+                id="canvas"
+                ref={canvaRef}
+                width={400}
+                height={400}
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}
+                onMouseMove={handleMouseMove}
+              >
+                sketch here
+              </canvas>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
+  const container = document.getElementById("root");
+  const root = ReactDOM.createRoot(container);
+  root.render(<SketchPage />);
+</script>
+>>>>>>> af08a86de74424245e250f85298036aebbbc9114
